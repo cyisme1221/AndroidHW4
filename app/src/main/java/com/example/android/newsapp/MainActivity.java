@@ -32,11 +32,11 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks<Void>, NewsAdapter.ItemClickListener{
 //    private ProgressDialog dialog;
-    private NewsAdapter newsAdapter; //显示数据的适配器
-    private RecyclerView news_recycler_view;//数据显示的列表
-    private ArrayList<NewsItem> mData = new ArrayList<NewsItem>();//缓存显示用的数据
-    LoaderManager loaderManager;//LoaderManager对象
-    private DatabaseOptUtil db;//数据库操作对象
+    private NewsAdapter newsAdapter; //adapter which will show data
+    private RecyclerView news_recycler_view;
+    private ArrayList<NewsItem> mData = new ArrayList<NewsItem>();
+    LoaderManager loaderManager;
+    private DatabaseOptUtil db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,40 +46,40 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
 //        progress.setVisibility(View.GONE);
         news_recycler_view = (RecyclerView) findViewById(R.id.news_recycler_view);
         news_recycler_view.setLayoutManager(new LinearLayoutManager(this));
-        db = new DatabaseOptUtil(this);//实例化数据库操作对象
-        newsAdapter = new NewsAdapter(this, mData, this);//实例化adapter
-        news_recycler_view.setAdapter(newsAdapter);//把adapter设置到RecyclerView现实
+        db = new DatabaseOptUtil(this);//get instance of DatabaseOptUtil
+        newsAdapter = new NewsAdapter(this, mData, this);//instance of adapter
+        news_recycler_view.setAdapter(newsAdapter);//set adapter into RecyclerView
 
-        loaderManager = getSupportLoaderManager();//获取LoaderManager对象
+        loaderManager = getSupportLoaderManager();//get LoaderManager object
         /*
          * Initialize the loader
          */
-        loaderManager.initLoader(1, null, this);//初始化loader
+        loaderManager.initLoader(1, null, this);//initialize loader
 
-        //判断之前是否安装过APP
+        //check App installed before or not
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isFirst = prefs.getBoolean("isFirstTime", true);
-        if (isFirst) {//如果还没有安装过
-            loadData();//加载网络数据
+        if (isFirst) {//if haven't install yet then loadData
+            loadData();
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("isFirstTime", false);
             editor.commit();
-        }else{//不是第一次安装使用 则从本地sqlite数据库当中读取数据
+        }else{//if not the first time to use, then read data from local sqlite database
             mData.clear();
             mData.addAll(db.getAll());
-            newsAdapter.setData(mData);//更新适配器显示
+            newsAdapter.setData(mData);
         }
         //create job schedule
-        ScheduleUtilities.scheduleRefresh(this);//执行 Firebase’s JobDispatcher 定时刷新
+        ScheduleUtilities.scheduleRefresh(this);// Firebase’s JobDispatcher refresh
     }
 
-    //加载数据
+    //loading data
     public void loadData() {
         loaderManager.restartLoader(1, null, this).forceLoad();
     }
 
 
-    //菜单操作
+    //menu operations
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         return super.onOptionsItemSelected(item);
     }
 
-    //使用AsyncTaskLoader加载新闻数据到本地sqlite数据库
+    //use AsyncTaskLoader to load news data to local sqlite database
     @Override
     public Loader<Void> onCreateLoader(int id, final Bundle args) {
         return new AsyncTaskLoader<Void>(this) {
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         };
     }
 
-    //从本地数据库加载数据显示出来
+    //load data from local database
     @Override
     public void onLoadFinished(Loader<Void> loader, Void data) {
 
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
 
     }
 
-    //绑定点击事件跳转打开
+    //open news website when clicked
     @Override
     public void onListItemClick(int clickedItemIndex) {
         Intent intent = new Intent(Intent.ACTION_VIEW);

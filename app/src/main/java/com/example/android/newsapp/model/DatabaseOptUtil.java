@@ -8,10 +8,10 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-//数据库操作类
+
 public class DatabaseOptUtil {
     private static DBHelper helper;
-    private static SQLiteDatabase db;//数据库操作对象
+    private static SQLiteDatabase db;
 
     //instance of DBHelper
     public DatabaseOptUtil(Context context) {
